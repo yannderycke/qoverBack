@@ -9,6 +9,7 @@ var connection = require('./db/connection');
 
 var index = require('./routes/index');
 var auth = require('./routes/auth');
+var quote = require('./routes/quote');
 
 
 var app = express();
@@ -52,6 +53,7 @@ app.use(function (req, res, next) {
 
 app.use('/', index);
 app.use('/auth', auth);
+app.use('/quote', quote)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

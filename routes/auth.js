@@ -11,8 +11,6 @@ router.post('/login', function (req, res, next) {
   var login = req.body.login;
   var password = req.body.password;
   var query = connection.query("SELECT * FROM qover.users WHERE login='" + login + "' and password=md5('" + password + "')", function (err, rows) {
-    console.log("rows ", rows);
-
     if (err) {
       var errornya = ("Error Selecting : %s ", err.code);
       console.log(err.code);
