@@ -2,13 +2,11 @@ var express = require('express');
 var router = express.Router();
 var connection = require('../db/connection');
 var mailer = require('../mailing/mail.js');
+var jwt = require('jsonwebtoken');
 
 
 /* GET users listing. */
-router.post('/', function (req, res, next) {
-    console.log("req ", req.body);
-
-
+router.post('/', verifyToken, function (req, res, next) {
     // var login = req.sanitize('login').escape().trim();
     // var password = req.sanitize('password').escape().trim();
     var userLogin = req.body.userLogin;
@@ -29,13 +27,30 @@ router.post('/', function (req, res, next) {
                 from: '"Yann Derycke" <yann.derycke@gmail.com>',
                 to: 'yderycke@adneom.com',
                 subject: 'Quote Qover',
-                text: '', 
-                html: html 
+                text: '',
+                html: html
             };
             var confirm = mailer.sendMail(mailOptions);
             res.send(JSON.stringify(rows));
         }
     });
 });
+
+function verifyToken(req, res, next) {
+    var token = req.headers.token;
+    if (token) {
+        jwt.verify(token, process.env.SECRET_KEY, function (err, decode) {
+            req.body.userLogin = decode.login;
+            if (err) {
+                res.status(500).send('Invalid Token');
+            } else {
+                console.log('ok')
+                next();
+            }
+        })
+    } else {
+        res.status(500).send('Issue Token');
+    }
+}
 
 module.exports = router;
