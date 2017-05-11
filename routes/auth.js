@@ -1,16 +1,15 @@
 var express = require('express');
 var router = express.Router();
 var connection = require('../db/connection');
-var jwt= require('jsonwebtoken')
+var jwt= require('jsonwebtoken');
+var sanitizer = require('sanitizer');
 
 /* GET users listing. */
 router.post('/login', function (req, res, next) {
 
+  var login = sanitizer.sanitize(req.body.login);
+  var password = sanitizer.sanitize(req.body.password);
 
-  // var login = req.sanitize('login').escape().trim();
-  // var password = req.sanitize('password').escape().trim();
-  var login = req.body.login;
-  var password = req.body.password;
   var query = connection.query("SELECT * FROM qover.users WHERE login='" + login + "' and password=md5('" + password + "')", function (err, rows) {
     if (err) {
       var errornya = ("Error Selecting : %s ", err.code);

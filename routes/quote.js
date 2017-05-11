@@ -2,13 +2,10 @@ var express = require('express');
 var router = express.Router();
 var connection = require('../db/connection');
 var mailer = require('../mailing/mail.js');
-var jwt = require('jsonwebtoken');
+var verifyToken = require('../middleware/verifyToken');
 
+router.post('/', verifyToken.verify, function (req, res, next) {
 
-/* GET users listing. */
-router.post('/', verifyToken, function (req, res, next) {
-    // var login = req.sanitize('login').escape().trim();
-    // var password = req.sanitize('password').escape().trim();
     var userLogin = req.body.userLogin;
     var valueOfCar = req.body.value;
     var price = req.body.price;
@@ -36,21 +33,5 @@ router.post('/', verifyToken, function (req, res, next) {
     });
 });
 
-function verifyToken(req, res, next) {
-    var token = req.headers.token;
-    if (token) {
-        jwt.verify(token, process.env.SECRET_KEY, function (err, decode) {
-            req.body.userLogin = decode.login;
-            if (err) {
-                res.status(500).send('Invalid Token');
-            } else {
-                console.log('ok')
-                next();
-            }
-        })
-    } else {
-        res.status(500).send('Issue Token');
-    }
-}
 
 module.exports = router;
